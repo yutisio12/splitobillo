@@ -1,0 +1,30 @@
+# ---- build stage ----
+FROM golang:1.25-alpine AS builder
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o /out/ocr ./cmd/ocr
+
+# ---- runtime stage: tesseract + ocr service ----
+FROM ubuntu:24.04
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        tesseract-ocr \
+        tesseract-ocr-eng \
+        tesseract-ocr-ind \
+        curl \
+        ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /out/ocr /usr/local/bin/ocr
+
+ENV OCR_PORT=8090
+ENV OCR_LANG=eng+ind
+
+EXPOSE 8090
+ENTRYPOINT ["/usr/local/bin/ocr"]

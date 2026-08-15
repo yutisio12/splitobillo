@@ -1,0 +1,7 @@
+.git
+.gitignore
+.env
+uploads/
+tests/
+*.md
+PLAN.md

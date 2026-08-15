@@ -1,0 +1,23 @@
+# Binaries
+*.exe
+*.test
+bin/
+dist/
+
+# Env
+.env
+
+# Uploads / runtime data
+uploads/
+
+# Go
+vendor/
+coverage.out
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
