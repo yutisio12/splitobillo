@@ -1,0 +1,70 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: splitbill-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-splitbill}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-splitbill}
+      POSTGRES_DB: ${DB_NAME:-splitbill}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+
+  ocr:
+    build:
+      context: .
+      dockerfile: Dockerfile.ocr
+    container_name: splitbill-ocr
+    restart: unless-stopped
+    expose:
+      - "8090"
+    ports:
+      - "${OCR_PORT:-8090}:8090"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+
+  api:
+    build: .
+    container_name: splitbill-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      ocr:
+        condition: service_healthy
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      PORT: ${PORT:-8080}
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_USER: ${DB_USER:-splitbill}
+      DB_PASSWORD: ${DB_PASSWORD:-splitbill}
+      DB_NAME: ${DB_NAME:-splitbill}
+      DB_SSLMODE: ${DB_SSLMODE:-disable}
+      OCR_SERVICE_URL: http://ocr:8090
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-me}
+      SESSION_TTL_MINUTES: ${SESSION_TTL_MINUTES:-1440}
+      UPLOAD_DIR: /app/uploads
+      MAX_UPLOAD_BYTES: ${MAX_UPLOAD_BYTES:-10485760}
+      RATE_LIMIT_PER_MINUTE: ${RATE_LIMIT_PER_MINUTE:-300}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
+    ports:
+      - "${API_PORT:-8080}:8080"
+    volumes:
+      - uploads:/app/uploads
+
+volumes:
+  dbdata:
+  uploads:
