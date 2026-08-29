@@ -38,14 +38,24 @@ type UploadReceiptResponse struct {
 }
 
 type UpdateReceiptRequest struct {
-	ReceiptNumber   *string    `json:"receipt_number"`
-	MerchantName    *string    `json:"merchant_name"`
-	TransactionDate *time.Time `json:"transaction_date"`
-	Subtotal        *int64     `json:"subtotal"`
-	Tax             *int64     `json:"tax"`
-	ServiceCharge   *int64     `json:"service_charge"`
-	Discount        *int64     `json:"discount"`
-	Total           *int64     `json:"total"`
+	ReceiptNumber   *string             `json:"receipt_number"`
+	MerchantName    *string             `json:"merchant_name"`
+	TransactionDate *time.Time          `json:"transaction_date"`
+	Subtotal        *int64              `json:"subtotal"`
+	Tax             *int64              `json:"tax"`
+	ServiceCharge   *int64              `json:"service_charge"`
+	Discount        *int64              `json:"discount"`
+	Total           *int64              `json:"total"`
+	Items           []UpdateItemRequest `json:"items"`
+}
+
+type UpdateItemRequest struct {
+	ID         uint    `json:"id"`
+	Name       string  `json:"name"`
+	Quantity   int     `json:"quantity"`
+	UnitPrice  int64   `json:"unit_price"`
+	TotalPrice int64   `json:"total_price"`
+	Confidence float64 `json:"confidence"`
 }
 
 func NewReceiptResponse(r *model.Receipt) *ReceiptResponse {
