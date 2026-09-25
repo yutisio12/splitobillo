@@ -47,7 +47,7 @@ func httpGet(req *http.Request) error {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return apperr.ServiceUnavailable("ocr service unhealthy")
+		return apperr.ServiceUnavailable("ocr service unavailable")
 	}
 	return nil
 }
