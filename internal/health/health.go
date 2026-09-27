@@ -35,7 +35,7 @@ func Handler(db *gorm.DB, cfg *config.Config) gin.HandlerFunc {
 			response.Error(c, apperr.ServiceUnavailable("one or more dependencies unavailable"))
 			return
 		}
-		response.OK(c, gin.H{"status": "ok", "components": components})
+		response.OK(c, gin.H{"status": "200", "components": components})
 	}
 }
 
@@ -47,7 +47,7 @@ func httpGet(req *http.Request) error {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return apperr.ServiceUnavailable("ocr service unhealthy")
+		return apperr.ServiceUnavailable("ocr service unavailable")
 	}
 	return nil
 }
