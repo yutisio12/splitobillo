@@ -46,6 +46,6 @@ func Error(c *gin.Context, err error) {
 	}
 	c.JSON(http.StatusInternalServerError, errorEnvelope{
 		Success: false,
-		Error:   errorBody{Code: "INTERNAL_SERVER_ERROR", Message: "Internal server error"},
+		Error:   errorBody{Code: "INTERNAL_SERVER_ERROR", Message: "Internal server error!"},
 	})
 }
