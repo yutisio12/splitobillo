@@ -72,7 +72,7 @@ func (h *ReceiptHandler) Update(c *gin.Context) {
 
 	var req dto.UpdateReceiptRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.Error(c, apperr.BadRequest("invalid request body: "+err.Error()))
+		response.Error(c, apperr.BadRequest("invalid request body"))
 		return
 	}
 
