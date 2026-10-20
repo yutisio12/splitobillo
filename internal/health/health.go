@@ -14,7 +14,7 @@ import (
 
 func Handler(db *gorm.DB, cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		components := gin.H{"db": "ok", "ocr": "ok"}
+		components := gin.H{"db": "200", "ocr": "200"}
 		healthy := true
 
 		sqlDB, err := db.DB()
