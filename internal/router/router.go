@@ -31,9 +31,12 @@ func New(cfg *config.Config, db *gorm.DB, logger *slog.Logger) *gin.Engine {
 	r.GET("/health", health.Handler(db, cfg))
 
 	receiptRepo := repository.NewReceiptRepository(db)
+	participantRepo := repository.NewParticipantRepository(db)
 	ocrService := service.NewOCRService(cfg)
 	receiptService := service.NewReceiptService(receiptRepo, cfg, ocrService)
 	receiptHandler := handler.NewReceiptHandler(receiptService)
+	participantService := service.NewParticipantService(receiptRepo, participantRepo)
+	participantHandler := handler.NewParticipantHandler(participantService)
 
 	api := r.Group("/api/v1")
 	api.Use(middleware.Auth(cfg))
@@ -48,6 +51,15 @@ func New(cfg *config.Config, db *gorm.DB, logger *slog.Logger) *gin.Engine {
 		api.PUT("/receipts/:id", receiptHandler.Update)
 		api.DELETE("/receipts/:id", receiptHandler.Delete)
 		api.POST("/receipts/:id/ocr/retry", receiptHandler.RetryOCR)
+
+		api.POST("/receipts/:id/participants", participantHandler.Add)
+		api.GET("/receipts/:id/participants", participantHandler.List)
+		api.PUT("/receipts/:id/participants/:participantId", participantHandler.Update)
+		api.DELETE("/receipts/:id/participants/:participantId", participantHandler.Delete)
+
+		api.GET("/receipts/:id/assignments", participantHandler.ListAssignments)
+		api.POST("/receipts/:id/assignments", participantHandler.Assign)
+		api.DELETE("/receipts/:id/assignments/:assignmentId", participantHandler.RemoveAssignment)
 	}
 
 	return r
