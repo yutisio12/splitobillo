@@ -44,6 +44,18 @@ func Unprocessable(message string) *AppError {
 	return New("INVALID_RECEIPT", message, http.StatusUnprocessableEntity)
 }
 
+func InvalidAssignment(message string) *AppError {
+	return New("INVALID_ASSIGNMENT", message, http.StatusUnprocessableEntity)
+}
+
+func InvalidQuantity(message string) *AppError {
+	return New("INVALID_QUANTITY", message, http.StatusUnprocessableEntity)
+}
+
+func SplitFailed(message string) *AppError {
+	return New("SPLIT_CALCULATION_FAILED", message, http.StatusUnprocessableEntity)
+}
+
 func ServiceUnavailable(message string) *AppError {
 	return New("SERVICE_UNAVAILABLE", message, http.StatusServiceUnavailable)
 }
